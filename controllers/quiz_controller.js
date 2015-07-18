@@ -14,7 +14,16 @@ exports.load = function(req, res, next, quizId){
 
 // GET /quizes
 exports.index = function(req,res){
-   models.Quiz.findAll().then(
+   var patronBusqueda = req.query.search || "";
+   patronBusqueda = "%" + patronBusqueda.replace(/\s/gi, "%") + "%";
+   // Objeto que modela una pseudo clausula WHERE de SQL
+   var paramBusqueda = {
+   // El comodin "?" de la expresión de la primera posición
+   // del array se sustituye por el contenido de la segunda posición
+   where: ["pregunta like ?", patronBusqueda]
+   };
+   
+   models.Quiz.findAll(paramBusqueda).then(
      function(quizes){
        res.render('quizes/index', { quizes: quizes});
      }
