@@ -15,12 +15,12 @@ exports.load = function(req, res, next, quizId){
 // GET /quizes
 exports.index = function(req,res){
    var patronBusqueda = req.query.search || "";
-   patronBusqueda = "%" + patronBusqueda.replace(/\s/gi, "%") + "%";
+   patronBusqueda = '%' + patronBusqueda.replace(" ", "%") + '%';
    // Objeto que modela una pseudo clausula WHERE de SQL
    var paramBusqueda = {
    // El comodin "?" de la expresión de la primera posición
    // del array se sustituye por el contenido de la segunda posición
-   where: ["pregunta like ?", patronBusqueda]
+   where: ["lower(pregunta) like lower(?)", patronBusqueda]
    };
    
    models.Quiz.findAll(paramBusqueda).then(
