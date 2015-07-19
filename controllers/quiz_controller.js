@@ -15,7 +15,7 @@ exports.load = function(req, res, next, quizId){
 // GET /quizes
 exports.index = function(req,res){
    var patronBusqueda = req.query.search || "";
-   patronBusqueda = '%' + patronBusqueda.replace(" ", "%") + '%';
+   patronBusqueda = "%" + patronBusqueda.replace(/\s/gi, "%") + "%";
    // Objeto que modela una pseudo clausula WHERE de SQL
    var paramBusqueda = {
    // El comodin "?" de la expresión de la primera posición
@@ -42,4 +42,22 @@ exports.answer = function(req, res) {
       resultado= 'Correcto';
    }
    res.render('quizes/answer', {quiz: req.quiz, respuesta: resultado});
+};
+
+// GET /quizes/new
+exports.new = function(req, res) {
+   var quiz = models.Quiz.build( // Crea objeto quiz)
+      {pregunta: "Pregunta", respuesta: "Respuesta"}
+   );
+   res.render('quizes/new', {quiz: quiz});
+};
+
+// POST /quizes/create
+exports.create = function(req, res) {
+   var quiz = models.Quiz.build( req.body.quiz );
+   
+   //guarda en DB los campos pregunta y respuesta de quiz
+   quiz.save({fields: ["pregunta", "respuesta"]}).then(function(){
+     res.redirect('/quizes'); 
+   })     // Redirección HTTP (URL relativo) lista de preguntas
 };
