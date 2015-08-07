@@ -41,6 +41,37 @@ app.use(function(req, res, next) {
    next();
 });
 
+// Auto-logout
+app.use(function(req, res, next) {
+    // Si hay un usuario autenticado
+    if(req.session.user) 
+    {
+
+       if (!req.session.counterTime) 
+       {
+          req.session.counterTime = new Date().getTime();
+       } 
+       else 
+       {
+          var tiempo_actual = new Date().getTime();
+
+          // Si han transcurridos 2 minutos de inactividad, la sesión ha expirado
+          if ( tiempo_actual - req.session.counterTime > 120000)
+          {
+             delete req.session.user;
+             delete req.session.counterTime;
+
+          } else {
+             req.session.counterTime = new Date().getTime();
+    
+          }
+       }
+
+    }
+
+    next();
+});
+
 app.use('/', routes);
 
 // catch 404 and forward to error handler
